@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆页面</title>
+    <link rel="stylesheet" href="../src/bootstrap/dist/css/bootstrap.min.css">
+    <script src="../src/jquery.min.js"></script>
+
+    <style>
+        body{
+            background-color: #f2f4f4;
+        }
+        .top{
+            width: 100%;
+            height: 82px;
+            position: relative;
+            border-bottom: 2px solid #377392;
+        }
+        .top img{
+            position: absolute;
+            top:10px;
+            left: 100px;
+        }
+        .topTxt1{
+            position: absolute;
+            top:30px;
+            left:370px;
+            color: #0085d0;
+            font-size: 20px;
+            font-weight: 600;
+        }
+         .bodyR{
+            padding: 10px 28px 10px 28px;
+            width: 30%;
+            height: 450px;
+            background: #fff;
+            position: absolute;
+            top:100px;
+            left: 35%;
+            box-shadow: 0 0 20px #ccc;
+        }
+        .alert {
+            display: none;
+        }
+
+        .alert a {
+            color: #c60a3f;
+            text-decoration: none;
+            line-height: 30px;
+        }
+    </style>
+</head>
+<body>
+<!-- **********************头部********************************** -->
+<div class="top">
+    <div class="topTxt1">注册页面</div>
+    <div style="position:absolute;top:25px;right:120px;">已注册，立即<a href="login.html" type="button" class="btn btn-default">登陆</a></div>
+</div>
+
+
+<div class="login_body">
+    <div class="bodyR">
+        <div style="height: 50px;border-bottom: 1px solid#ccc;text-align: center;line-height: 40px;font-size: 16px">
+            用户注册
+        </div>
+        <div style="margin-top: 20px" class="form-horizontal">
+            <div class="form-group">
+                <i style="margin-left: 20px" class="glyphicon glyphicon-user
+"></i><label style="margin-left: 20px">用户名：</label><br>
+
+                <div class="col-sm-12">
+                    <input id="name" class="form-control" placeholder="请输入用户名">
+                </div>
+                <div id="nameError" class="alert" style="width: 100%;height: 30px;">
+                    <a></a>
+                </div>
+            </div>
+            <div class="form-group">
+                <i style="margin-left: 20px" class="glyphicon glyphicon-lock
+"></i><label style="margin-left: 20px">密码：</label><br>
+                <div class="col-sm-12">
+                    <input id="pass" type="password" class="form-control" placeholder="请输入密码">
+                </div>
+                <div id="passError" class="alert" style="width: 100%;height: 30px">
+                    <a></a>
+                </div>
+            </div>
+            <div class="form-group">
+                <i style="margin-left: 20px" class="glyphicon glyphicon-lock
+"></i><label style="margin-left: 20px">重复密码：</label><br>
+                <div class="col-sm-12">
+                    <input id="rePass" type="password" class="form-control" placeholder="请再次输入密码">
+                </div>
+                <div id="rePassError" class="alert" style="width: 100%;height: 30px">
+                    <a></a>
+                </div>
+            </div>
+            <div class="form-group">
+                <i style="margin-left: 20px" class="glyphicon glyphicon-lock
+"></i><label style="margin-left: 20px">手机号：</label><br>
+                <div class="col-sm-12">
+                    <input id="phone" type="password" class="form-control" placeholder="请输入手机号">
+                </div>
+                <div id="phoneNumError" class="alert" style="width: 100%;height: 30px">
+                    <a></a>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button id="btn" style="width: 100%;background-color: #108cee;margin-top: 10px;color: white;font-weight: 600" type="submit" class="btn btn-default">注册</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $("#name").focus(function () {
+        $("#nameError").hide();
+        $("#btnError").hide();
+    });
+    $("#name").blur(function () {
+        var checkuser = $("#name").val();
+        $.ajax({
+            type: 'get',
+            url: "dataAction.aspx?action=check&checkuser=" + checkuser,
+            success: function (data) {
+                var dataJson = eval('(' + data + ')');
+                if (dataJson.state == 'fail') {
+                    
+                } else {
+                    $("#nameError").find('a').html("该用户名已注册");
+                    $("#nameError").show();
+                }
+            }
+        })
+    });
+    
+
+
+    $("#btn").click(function () {
+        
+        $("#name,#pass").trigger("blur");
+        var username = $("#name").val();
+        var userpassword = $("#pass").val();
+        var phonenum = $("#phone").val();
+        if ($("#nameError,#passError").is(":visible")) {
+            alert("页面有错误,更改页面")
+        } else {
+            $.ajax({
+                type: "get",
+                url: "dataAction.aspx?action=register&username=" + username + "&userpassword=" + userpassword + "&phonenum=" + phonenum,
+                //dataType: "json",
+                success: function (data) {
+                    if (data == '') {
+                        alert("用户名或密码错误");
+                    } else {
+                        alert('注册成功');
+                        window.location.href = 'login.html';
+                    }
+                }
+
+            })
+
+        }
+    })
+
+
+
+</script>
+
+
+</body>
+</html>

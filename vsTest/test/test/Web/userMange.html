@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="stylesheet" href="../src/bootstrap/dist/css/bootstrap.min.css"/>
+    <script src="../src/jquery.min.js"></script>
+    <script src="../src/bootstrap/dist/js/bootstrap.min.js"></script>
+    <style>
+        th, td {
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html">返回首页</a>
+    <div style="padding:5%" class="user" id="user">
+        <table id="userShow" class="table table-condensed">
+            <thead>
+                <th>#</th>
+                <th>用户名称</th>
+                <th>用户密码</th>
+                <th>联系方式</th>
+                <th>分配角色</th>
+                <th>用户操作</th>
+            </thead>
+        </table>
+    </div>
+    <div class="modal fade userMange" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="gridSystemModalLabel">用户资料修改</h4>
+      </div>
+      <div id="userChange"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button onclick="userupdata()" type="button" class="btn btn-primary">保存修改</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+    <script>
+        $(function () {
+            userShow()
+        })
+        //更新用户信息
+        function userupdata() {
+            var username = $("#username").val();
+            var userpassword = $("#password").val();
+            var role = $("#role").val();
+            var phonenum = $("#phone").val();
+            $.ajax({
+                type: "get",
+                url: "dataAction.aspx?action=userupdata" +
+                    "&username=" + username+
+                    "&userpassword=" + userpassword +
+                    "&role="+role+
+                    "&phonenum=" + phonenum,
+                success: function (data) {
+                    var dataJson = eval('(' + data + ')');
+                    if (dataJson[0].state == 'success') {
+                        alert('修改成功');
+                        window.location.reload();
+                    }
+                }
+            })
+        }
+        //删除用户
+        function deluser(e) {
+            //console.info($(e).parents("tr")[0].id);
+            var username = $(e).parents("tr")[0].id;
+            $.ajax({
+                type: "get",
+                url: "dataAction.aspx?action=deluser&username=" + username,
+                //dataType: "json",
+                success: function (data) {
+                    var dataJson = eval('(' + data + ')');
+                    if (dataJson.state == 'fail') {
+                        alert('失败');
+                    } else {
+                        alert('删除成功');
+                        window.location.reload();
+                    }
+                }
+
+            })
+        }
+        //管理用户页面
+        function system(e) {
+            var username = $(e).parents("tr")[0].id;
+            $.ajax({
+                type: "get",
+                url: "dataAction.aspx?action=usermange" + "&username=" + username,
+                //dataType: "json",
+                success: function (data) {
+                    var dataJson = eval('(' + data + ')');
+                    if (dataJson.state == 'fail') {
+                        alert('没有数据');
+                    } else {
+                        var str = '<div>';
+                        for (var i = 0; i < dataJson.length; i++) {
+                            if (dataJson[i].ROLE == null) {
+                                dataJson[i].ROLE = "";
+                            }
+                            str = str + '<div>用户名：<input id="username" class="form-control" value="' + dataJson[i].USERNAME + '"></div>';
+                            str = str + '<div>密码：<input id="password" class="form-control" value="' + dataJson[i].PASS + '"></div>';
+                            str = str + '<div>电话：<input id="phone" class="form-control" value="' + dataJson[i].PHONE_NUM + '"></div>';
+                            str = str + '<div>角色：<input id="role" class="form-control" value="' + dataJson[i].ROLE + '"></div>';
+                        }
+                        str = str + '</div>';
+                        $("#userChange").html(str);
+                    }
+                }
+
+            })
+        }
+        //展现用户
+        function userShow() {
+            var username = '';
+            $.ajax({
+                type: "get",
+                url: "dataAction.aspx?action=usermange&username="+username,
+                //dataType: "json",
+                success: function (data) {
+                    var dataJson = eval('(' + data + ')');
+                    if (dataJson.state == 'fail') {
+                        alert('没有数据');
+                    } else {
+                        var str = '<tbody>';
+                        for (var i = 0; i < dataJson.length; i++) {
+                            str = str + '<tr id=' + dataJson[i].USERNAME + '><td>' + (i + 1) + '</td><td>' + dataJson[i].USERNAME + '</td>';
+                            str = str + '<td>' + dataJson[i].PASS + '</td>';
+                            str = str + '<td>' + dataJson[i].PHONE_NUM + '</td>';
+                            str = str + '<td>' + dataJson[i].ROLE + '</td>';
+                            str = str + '<td><button onclick="deluser(this)" class="btn btn-danger">删除</button>';
+                            str = str + '<button onclick="system(this)" data-toggle="modal" data-target=".userMange" class="btn btn-primary">设置</button></td></tr>';
+                        }
+                        str = str + '</tbody>';
+                        $("#userShow").append(str);
+                    }
+                }
+
+            })
+        }
+    </script>
+</body>
+</html>

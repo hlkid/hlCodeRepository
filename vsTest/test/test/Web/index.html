@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>来看看</title>
+    <script src="../src/jquery.min.js"></script>
+</head>
+<body>
+    <a href="newsAdd.html">新闻录入</a>
+    <a href="login.html">返回登陆</a>
+    <a href="userMange.html">用户管理</a>
+    <div style="margin-top:50px" id="newsshow">
+        
+    </div>
+    <script>
+        //查询
+        $(function () {
+            $.ajax({
+                type: 'get',
+                url: 'dataAction.aspx?action=newshow&newstype=互联网',
+                success: function (data) {
+                    var dataJson = eval('(' + data + ')');
+                    console.info(dataJson);
+                    if (dataJson.state == 'fail') {
+                        alert('没有数据')
+                    }
+                    var str = '';
+                    for (var i = 0; i < dataJson.length; i++) {
+                        str = str + '<li style="margin-top:10px"><label><a href="' + dataJson[i].NEWS_CONTENT + '">' + dataJson[i].NEWS_TITLE + '</a></li>';
+                        str = str + '<div>' + dataJson[i].NEWS_SUMMARY + '</div></div>';
+                        $("#newsshow").html(str);
+                        
+                    }
+                    
+                }
+            })
+        })
+            
+        
+        //提交
+        function insert() {
+            $.ajax({
+                type: 'get',
+                url: 'dataAction.aspx?action=insert&parma=lll',
+                success: function (result) {
+                    alert(result);
+                    $("#txt").html(result);
+                }
+            })
+        }
+    </script>
+</body>
+</html>
